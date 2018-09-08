@@ -1,27 +1,172 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
-  </head>
-  <body>
+    <style>
+    header,
+    #header {
+        font-size: 4vh;
+        background-color: rgba(255, 255, 255);
+        height: 80px;
+        margin: auto auto;
+    }
+
+    h1,
+    #navi {
+        text-align: center;
+        vertical-align: middle;
+        display: inline-block;
+        width: 100%;
+    }
+
+    body {
+        background-color: rgba(48, 185, 255);
+    }
+
+    #navi {
+        font-size: 50;
+        display: inline-block;
+        background-color: rgba(185, 248, 255);
+        border-style: solid;
+        border-color: 'black';
+        border: 1px;
+    }
+
+    #streamBody {
+        width: 600px;
+        margin: auto;
+    }
+
+    ul {
+        list-style: none;
+    }
+
+    li {
+        background-color: rgba(185, 248, 255);
+        border-color: 'black';
+        border-style: solid;
+        border-width: : .5px;
+        border-radius: 10px;
+        margin-bottom: 0px;
+    }
+
+    .content {
+        font-family: "Helvetica Neue";
+    }
+
+    #tweetText {
+        font-size: 20px;
+        margin: 10px;
+    }
+
+    #timeStamp {
+        font-size: 15px;
+        text-indent: 10px;
+        background-color: rgba(255, 255, 255, .75);
+        border-bottom-right-radius: 5px;
+        border-bottom-left-radius: 5px;
+        margin: 0px;
+    }
+
+    #username {
+        font-size: 20px display: block;
+        font-weight: bold;
+        margin-left: 10px;
+        text-indent: 10px;
+        text-decoration: none;
+    }
+    </style>
+</head>
+<header>
+    <h1 id="header">Twittler</h1>
+</header>
+
+<body>
     <script>
-
-      $(document).ready(function(){
+    $(document).ready(function() {
         var $body = $('body');
-        $body.html('');
+        var $streamBody = $('<div id="streamBody"></div>');
+        var $navi = $('<div id="navi" class="home"><a href="#">Home</a></div>');
+        $navi.appendTo($body);
+        $streamBody.appendTo($body);
 
-        var index = streams.home.length - 1;
-        while(index >= 0){
-          var tweet = streams.home[index];
-          var $tweet = $('<div></div>');
-          $tweet.text('@' + tweet.user + ': ' + tweet.message);
-          $tweet.appendTo($body);
-          index -= 1;
+        var focus = 'home';
+
+
+        var mainstream = function() {
+            var index = streams.home.length - 1;
+
+            while (index >= 0) {
+                var tweet = streams.home[index]; // element in array                   
+                var username = tweet.user;
+                var options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric',minute: 'numeric',second: 'numeric', timeZoneName:'short'};
+                var tweetStamp = tweet.created_at.toLocaleDateString('en-US', options);
+                var $stream = $('<ul id="stream"></ul>');
+                var $username = $('<a href="#" id="username" class="content username"></a>');
+                var $tweet = $('<li id="tweet"></li>');
+                var $tweetText = $('<p id="tweetText" class="content"></p>');
+                var $timeStamp = $('<p id="timeStamp" class="content"></p>');
+
+                if (focus === 'home') {
+
+                    $stream.appendTo($streamBody);
+                    $username.text('@' + username);
+                    $tweetText.text(tweet.message);
+                    $timeStamp.text(tweetStamp);
+                    $tweet.appendTo($stream);
+                    $username.appendTo($tweet);
+                    $tweetText.appendTo($tweet);
+                    $timeStamp.appendTo($tweet);
+
+                } else if (username === focus) {
+
+                    $stream.appendTo($streamBody);
+                    $username.text('@' + username);
+                    $tweetText.text(tweet.message);
+                    $timeStamp.text(tweetStamp);
+                    $tweet.appendTo($stream);
+                    $username.appendTo($tweet);
+                    $tweetText.appendTo($tweet);
+                    $timeStamp.appendTo($tweet);
+                }
+
+                index -= 1;
+            }
         }
 
-      });
+        var refresher = function() {
+            $("li").remove("#tweet");
+            mainstream();
+            setTimeout(refresher, 10000);
+        };
+        refresher();
 
+        $('#navi a').on('click', function() {
+            focus = 'home'
+            $("li").remove("#tweet");
+            mainstream();
+        });
+
+        $('#streamBody').on('click', '.username', function() {
+            var id = $(this).text();
+            if (id === '@mracus') {
+                focus = "mracus";
+            } else if (id === '@shawndrost') {
+                focus = "shawndrost";
+            } else if (id === '@sharksforcheap') {
+                focus = "sharksforcheap";
+            } else if (id === '@douglascalhoun') {
+                focus = "douglascalhoun";
+            }
+            $("li").remove("#tweet");
+            mainstream();
+
+        });
+
+    });
     </script>
-  </body>
+</body>
+
 </html>
